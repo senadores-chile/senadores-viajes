@@ -1,0 +1,26 @@
+{
+  "name": "senadores-viajes",
+  "description": "Obtiene el detalle de los viajes realizados por senadores de Chile.",
+  "author": "YerkoPalma",
+  "version": "0.1.0",
+  "main": "index.js",
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "test": "standard --verbose | snazzy && ava"
+  },
+  "repository": "YerkoPalma/senadores-viajes",
+  "keywords": [],
+  "license": "MIT",
+  "dependencies": {
+    "p-all": "^1.0.0",
+    "p-map": "^1.1.0",
+    "senadores-base": "^1.1.0"
+  },
+  "devDependencies": {
+    "ava": "*",
+    "snazzy": "^5.0.0",
+    "standard": "^8.6.0"
+  }
+}
