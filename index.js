@@ -21,11 +21,11 @@ module.exports = function senadoresViajes (query, options) {
 
   let senadoresBase = senadores(query)
 
-  const mapper = senador => {
+  const mapper = (senador, index) => {
     switch (options.tipo) {
       case 'todos':
         const actions = [
-          () => getViajesNacionales(senador, getPeriodo(options.periodo)),
+          () => getViajesNacionales(senador, index, senadoresBase, getPeriodo(options.periodo)),
           () => getViajesExtranjeros(senador, getPeriodo(options.periodo))
         ]
         return pAll(actions).then(result => {
@@ -33,7 +33,7 @@ module.exports = function senadoresViajes (query, options) {
           return { nacionales: result[0], extranjeros: result[1] }
         })
       case 'nacionales':
-        return getViajesNacionales(senador, getPeriodo(options.periodo), options.incluyeSenador)
+        return getViajesNacionales(senador, index, senadoresBase, getPeriodo(options.periodo), options.incluyeSenador)
       case 'extranjeros':
         return getViajesExtranjeros(senador, getPeriodo(options.periodo), options.incluyeSenador)
       default:

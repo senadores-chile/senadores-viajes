@@ -2,6 +2,7 @@
 
 const scraperjs = require('scraperjs')
 const assert = require('assert')
+const pMap = require('p-map')
 const URL_VIAJES_NACIONALES = 'http://www.senado.cl/appsenado/index.php?mo=transparencia&ac=informeTransparencia&tipo=201&anno=:year:&mesid=:month:'
 const URL_VIAJES_INTERNACIONALES = 'http://www.senado.cl/appsenado/index.php?mo=transparencia&ac=informeTransparencia&tipo=200&anno=:year:'
 
@@ -19,6 +20,20 @@ function removeAccent (str) {
           .replace(/Ó/g, 'O')
           .replace(/Ú/g, 'U')
 }
+
+// Remove dots
+// (str) -> str
+// function removeDots (str) {
+//   assert.equal(typeof str, 'string', 'Sólo se puede remover puntos de strings')
+
+//   return str.replace(/\./g, '')
+// }
+
+// Wrap a string to prevent search errors for case mismatch and untrimed strings
+// (str) -> str
+// function wrapString (str) {
+//   return str ? removeAccent(removeDots(str)).toUpperCase().trim() : ''
+// }
 
 // Convert a period into a valid year
 // (date|num) -> num
@@ -40,15 +55,36 @@ function getPeriodo (periodo) {
 }
 
 // Get ofitial national travles for a senator
-// (obj, num, bool) -> arr
-function getViajesNacionales (senador, periodo, incluyeSenador) {
-  let url = URL_VIAJES_NACIONALES.replace(/:senador-id:/, senador.id)
+// (obj, num, num, bool) -> arr
+function getViajesNacionales (senador, index, senadores, periodo, incluyeSenador) {
+  const urls = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(month => {
+    return URL_VIAJES_NACIONALES.replace(/:year:/, periodo).replace(/:month:/, month)
+  })
 
-  return scraperjs.StaticScraper.create()
+  const mapper = url => {
+    scraperjs.StaticScraper.create()
     .get(url)
     .scrape($ => {
+      // get the tr element where the first td child has the name of the senator
+      // and the next() td has no text() and also get the next senator, if any,
+      // so you have the boundaries of national travels for the current period
+      // const limitTrs = $('#main table tr').filter((i, el) => {
+      // const first = wrapString($(el).find('td:first-child').text())
+      // const second = $(el).find('td:last-child').text().trim()
+
+      // return (first === wrapString(senador.nombre.replace(',', '').toUpperCase()) &&
+      //        second === '') ||
+      //        (senadores[index + 1] &&
+      //          first === wrapString(senadores[index + 1].nombre.replace(',', '').toUpperCase()) && second === '')
+      // }).get()
+      // console.log(limitTrs)
+      // const i = $('#main table tr').index(limitTrs[0])
+      // const j = $('#main table tr').index(limitTrs[1])
+      // console.log(i, j)
       return {}
     })
+  }
+  return pMap(urls, mapper)
 }
 
 // Get ofitial international travles for a senator
@@ -58,6 +94,10 @@ function getViajesExtranjeros (senador, periodo, incluyeSenador) {
 
   return scraperjs.StaticScraper.create()
     .get(url)
+    .catch(ex => {
+      console.log('Some srioues problem happened!\n\n\n')
+      return new Promise()
+    })
     .scrape($ => {
       const nombre = senador.nombre.split(',')[1].split(' ')[1]
       const apellido = senador.nombre.split(',')[0].split(' ')[0]
@@ -86,7 +126,7 @@ function getViajesExtranjeros (senador, periodo, incluyeSenador) {
           motivo
         }
       }).get()
-      return incluyeSenador ? Object.assign(senador, results) : results
+      return incluyeSenador ? Object.assign(senador, { internacionales: results }) : results
     })
 }
 
