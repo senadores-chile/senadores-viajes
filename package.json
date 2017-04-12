@@ -5,7 +5,8 @@
   "version": "0.1.0",
   "main": "index.js",
   "files": [
-    "index.js"
+    "index.js",
+    "utils.js"
   ],
   "scripts": {
     "test": "standard --verbose | snazzy && ava"
@@ -14,7 +15,6 @@
   "keywords": [],
   "license": "MIT",
   "dependencies": {
-    "assert": "^1.4.1",
     "p-all": "^1.0.0",
     "p-map": "^1.1.0",
     "scraperjs": "^1.2.0",
