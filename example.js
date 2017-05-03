@@ -1,4 +1,4 @@
 const viajes = require('./')
 
-viajes('Zaldívar', { tipo: 'extranjeros', periodo: 2016, incluyeSenador: true })
+viajes('Moreira', { tipo: 'extranjeros' })
   .then(s => console.log(s))

@@ -14,7 +14,7 @@ module.exports = function senadoresViajes (query, options) {
   const defaultOptions = {
     periodo: new Date().getFullYear(),
     tipo: 'todos',
-    cantidadSenadores: 1,
+    cantidadSenadores: -1,
     incluyeSenador: false
   }
   options = Object.assign(defaultOptions, options)
